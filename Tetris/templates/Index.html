@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #282c34;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .board {
+            display: grid;
+            grid-template-rows: repeat(20, 30px);
+            grid-template-columns: repeat(10, 30px);
+            gap: 1px;
+            background-color: #444;
+            margin: 20px 0;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            background-color: #222;
+        }
+        .cell.active {
+            background-color: #f39c12;
+        }
+        .controls {
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #startButton {
+            margin-bottom: 20px;
+            background-color: #2ecc71;
+        }
+        #startButton:hover {
+            background-color: #27ae60;
+        }
+        #pauseButton {
+            background-color: #e74c3c;
+        }
+        #pauseButton:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tetris Game</h1>
+    <button id="startButton">Start Game</button>
+    <button id="pauseButton">Pause</button>
+    <div id="score">Score: 0</div>
+    <div class="board" id="gameBoard"></div>
+
+    <script>
+        const gameBoard = document.getElementById('gameBoard');
+        const scoreElement = document.getElementById('score');
+        const startButton = document.getElementById('startButton');
+        const pauseButton = document.getElementById('pauseButton');
+        let gameInterval;
+        let isPaused = false;
+
+        function createBoard() {
+            gameBoard.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                for (let j = 0; j < 10; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    gameBoard.appendChild(cell);
+                }
+            }
+        }
+
+        function updateBoard(board) {
+            const cells = gameBoard.children;
+            for (let i = 0; i < board.length; i++) {
+                for (let j = 0; j < board[i].length; j++) {
+                    const index = i * 10 + j;
+                    cells[index].classList.toggle('active', board[i][j] === 1);
+                }
+            }
+        }
+
+        function startGame() {
+            fetch('/start', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    updateBoard(data.board);
+                    scoreElement.textContent = `Score: ${data.score}`;
+                    if (gameInterval) {
+                        clearInterval(gameInterval);
+                    }
+                    gameInterval = setInterval(() => {
+                        if (!isPaused) {
+                            sendControlAction('tick');
+                        }
+                    }, 500);
+                });
+        }
+
+        function sendControlAction(action) {
+            fetch(`/control?action=${action}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.game_over) {
+                        alert('Game Over! Final Score: ' + data.score);
+                        clearInterval(gameInterval);
+                    } else {
+                        updateBoard(data.board);
+                        scoreElement.textContent = `Score: ${data.score}`;
+                    }
+                });
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            pauseButton.textContent = isPaused ? 'Resume' : 'Pause';
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (isPaused) return; // Ignore controls when paused
+            switch (event.key) {
+                case 'ArrowLeft':
+                    sendControlAction('left');
+                    break;
+                case 'ArrowRight':
+                    sendControlAction('right');
+                    break;
+                case 'ArrowUp':
+                    sendControlAction('rotate');
+                    break;
+                case 'ArrowDown':
+                    sendControlAction('drop');
+                    break;
+            }
+        });
+
+        startButton.addEventListener('click', startGame);
+        pauseButton.addEventListener('click', togglePause);
+
+        createBoard();
+    </script>
+</body>
+</html>
