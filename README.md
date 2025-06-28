@@ -165,3 +165,14 @@ Below are some screenshots showing the game in action:
 *Description: The game over screen showing the final score when the blocks reach the top.*
 
 ---
+
+## Notes
+
+- The game can be controlled via both keyboard and on-screen buttons.
+- It is recommended to play the game in a browser window that is not too small, so the blocks and controls are visible clearly.
+
+---
+
+## License
+
+This project is open-source and available under the MIT License.
