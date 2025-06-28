@@ -141,3 +141,27 @@ kubectl delete -f kubernetes/
 cd terraform
 terraform destroy
 ```
+
+## Screenshots
+
+Below are some screenshots showing the game in action:
+
+### 1. **Game Starting Screen**
+
+!![image](https://github.com/user-attachments/assets/271ad5fc-7ca3-4872-a13b-df9c212fda12)
+
+*Description: The game board at the start of a new game, with the "Start Game" button visible.*
+
+### 2. **Game in Progress**
+
+![image](https://github.com/user-attachments/assets/75ea940b-84c0-418f-b831-8f0d308f7d72)
+
+*Description: A screenshot showing the Tetris grid while blocks are falling. The "Pause" button is also visible.*
+
+### 3. **Game Over Screen**
+
+![image](https://github.com/user-attachments/assets/c76ced68-a10a-423c-8faf-f902aa74e83f)
+
+*Description: The game over screen showing the final score when the blocks reach the top.*
+
+---
